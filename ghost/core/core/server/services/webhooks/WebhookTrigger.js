@@ -94,8 +94,11 @@ class WebhookTrigger {
                 'Content-Version': `v${ghostVersion.safe}`
             };
 
+            const now = Date.now();
+
             if (secret !== '') {
-                headers['X-Ghost-Signature'] = `sha256=${crypto.createHmac('sha256', secret).update(reqPayload).digest('hex')}, t=${Date.now()}`;
+                headers['X-Ghost-Signature'] = `sha256=${crypto.createHmac('sha256', secret).update(reqPayload).digest('hex')}, t=${now}`;
+                headers['X-Ghost-Signature-V2'] = `s=${crypto.createHmac('sha256', secret).update(`${now}.${reqPayload}`).digest('hex')}, t=${now}`;
             }
 
             const opts = {
